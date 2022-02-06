@@ -1,6 +1,5 @@
 package com.example.weatherapp;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button getRequestButton;
     private TextView weather_info;
+    private String weather_text_info="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,18 +27,21 @@ public class MainActivity extends AppCompatActivity {
         getRequestButton = (Button) findViewById(R.id.get_weather);
         weather_info = (TextView) findViewById(R.id.textView);
 
-        getRequestButton.setOnClickListener(new View.OnClickListener(){
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View view) {
-                /*String getRequest = "";
+        getRequestButton.setOnClickListener(view -> {
+            //We have to do a thread for a network petition for work in background(mandatory)
+            Thread thread = new Thread(() -> {
                 try {
-                    getRequest = getWeather("https://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=6e36078b02f257df49f83be2314b0b32");
-                    weather_info.setText(getRequest);
+                    weather_text_info=getWeather("https://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=6e36078b02f257df49f83be2314b0b32");
                 } catch (IOException e) {
-                    weather_info.setText(getRequest);
-                }*/
-                weather_info.setText("Test");
+                    weather_text_info = e.toString();
+                }
+            });
+            thread.start();
+            try {
+                thread.join();
+                weather_info.setText(weather_text_info);
+            } catch (InterruptedException e) {
+                weather_info.setText(e.toString());
             }
         });
     }
@@ -54,4 +57,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return result.toString();
     }
+
 }
