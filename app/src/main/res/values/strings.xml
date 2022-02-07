@@ -3,4 +3,6 @@
     <string name="weather_info">Hello World!</string>
     <string name="current_temp">15ºC</string>
     <string name="get_weather">Get Weather</string>
+    <string name="todo">TODO</string>
+    <string name="default_max_min_values">15/10ºC</string>
 </resources>
