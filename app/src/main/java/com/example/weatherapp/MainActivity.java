@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -90,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }else{
+                Toast.makeText(getApplicationContext(),"Try another city",Toast.LENGTH_SHORT).show();
             }
         }
     }
