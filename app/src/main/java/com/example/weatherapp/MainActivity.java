@@ -1,5 +1,7 @@
 package com.example.weatherapp;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -71,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONtoVARS(result);
                 weather_info.setText(currentTemp);
-                weatherIcon.setImageURI(Uri.parse("https://openweathermap.org/img/wn/"+weatherIconName+"@2x.png"));
+                new DownloadImageTask((ImageView) findViewById(R.id.imageView))
+                        .execute("https://openweathermap.org/img/wn/"+weatherIconName+"@2x.png"); //get the weather description icon from the api
 
                 //Refresh the weather data with a button
                 //using thread because internet request
@@ -104,12 +108,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //AsyncTask method to download an image extracted from
+    //https://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                //Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
     protected void JSONtoVARS(String jsonString) throws JSONException {
         JSONObject jsonObj = new JSONObject(jsonString);
         JSONObject main = jsonObj.getJSONObject("main");
         JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
 
-        currentTemp = main.getString("temp").charAt(0) + "°C"; //round degrees
+        if(Character.compare(main.getString("temp").charAt(1), '.') != 0) //0 is equals
+            currentTemp = main.getString("temp").charAt(0) +""+ main.getString("temp").charAt(1) + "ºC";
+        else
+            currentTemp = main.getString("temp").charAt(0) + "°C"; //round degrees
         tempMin = main.getString("temp_min").charAt(0) + "°C";
         tempMax = main.getString("temp_max").charAt(0) + "°C";
 
