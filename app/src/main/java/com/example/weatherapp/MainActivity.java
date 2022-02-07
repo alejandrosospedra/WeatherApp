@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getRequestButton = findViewById(R.id.get_weather);
         weather_info = findViewById(R.id.textView);
         refreshButton = findViewById(R.id.imageButton);
 
