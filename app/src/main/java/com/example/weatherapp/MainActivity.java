@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             try {
                 JSONtoVARS(result);
-                weather_info.setText(currentTemp+tempMin+tempMax+skyState);
+                weather_info.setText(currentTemp);
 
                 //Refresh the weather data with a button
                 //using thread because internet request
@@ -102,9 +102,9 @@ public class MainActivity extends AppCompatActivity {
         JSONObject main = jsonObj.getJSONObject("main");
         JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
 
-        currentTemp = main.getString("temp") + "°C";
-        tempMin = main.getString("temp_min") + "°C";
-        tempMax = main.getString("temp_max") + "°C";
+        currentTemp = main.getString("temp").charAt(0) + "°C"; //round degrees
+        tempMin = main.getString("temp_min").charAt(0) + "°C";
+        tempMax = main.getString("temp_max").charAt(0) + "°C";
 
         skyState = weather.getString("description");
 
