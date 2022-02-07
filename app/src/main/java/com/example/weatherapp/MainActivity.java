@@ -1,9 +1,11 @@
 package com.example.weatherapp;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,14 +21,17 @@ public class MainActivity extends AppCompatActivity {
     private Button getRequestButton;
     private ImageButton refreshButton;
     private TextView weather_info;
-    private String weather_text_info="";
+    private ImageView weatherIcon;
+
     //Weather data
+    private String weather_text_info="";
     private String city = "Barcelona";
     private final String apiId = "6e36078b02f257df49f83be2314b0b32";
     private String currentTemp = "";
     private String skyState = "";
     private String tempMin = "";
     private String tempMax = "";
+    private String weatherIconName = ""; //name of the weather icon associate to the weather description
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         weather_info = findViewById(R.id.textView);
         refreshButton = findViewById(R.id.imageButton);
+        weatherIcon = findViewById(R.id.imageView);
 
         new weatherBackgroundTask().execute();
     }
@@ -65,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONtoVARS(result);
                 weather_info.setText(currentTemp);
+                weatherIcon.setImageURI(Uri.parse("https://openweathermap.org/img/wn/"+weatherIconName+"@2x.png"));
 
                 //Refresh the weather data with a button
                 //using thread because internet request
@@ -73,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     //We have to do a thread for a network petition to work in background(mandatory)
                     Thread thread = new Thread(() -> {
                         try {
-                            weather_text_info=getRequest.getWeather("https://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=6e36078b02f257df49f83be2314b0b32");
+                            weather_text_info=getRequest.getWeather("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=" + apiId);
                             JSONtoVARS(weather_text_info);
                         } catch (Exception e) {
                             weather_text_info = e.toString();
@@ -82,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     thread.start();
                     try {
                         thread.join();
-                        weather_info.setText(currentTemp+tempMin+tempMax+skyState);
+                        weather_info.setText(currentTemp);
                     } catch (InterruptedException e) {
                         weather_info.setText(e.toString());
                     }
@@ -107,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         tempMax = main.getString("temp_max").charAt(0) + "°C";
 
         skyState = weather.getString("description");
+        weatherIconName = weather.getString("icon");
 
         city = jsonObj.getString("name");
     }
